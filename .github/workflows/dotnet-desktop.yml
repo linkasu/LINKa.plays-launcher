@@ -69,10 +69,8 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 6.0.x
-
-    - name: Setup MSBuild.exe
-      uses: microsoft/setup-msbuild@v1.0.1
-
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.1
     - name: Restore packages
       run: nuget restore $env:Solution_Path 
       
