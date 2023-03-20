@@ -80,5 +80,6 @@ jobs:
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: Release-bin
-        path: LINKa.plays-launcher/bin/Release
+        name: Release
+        path: LINKa.plays-launcher/bin/Release/net6.0-windows/
+
