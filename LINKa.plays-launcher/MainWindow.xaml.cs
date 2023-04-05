@@ -17,7 +17,14 @@ namespace LINKa.plays_launcher
         public MainWindow()
         {
             InitializeComponent();
-            CheckUpdate();
+            try
+            {
+                CheckUpdate();
+            }
+            catch (Exception)
+            {
+
+            } 
         }
 
         private void CheckUpdate()
@@ -46,6 +53,7 @@ namespace LINKa.plays_launcher
 
         private string GetAppVersion()
         {
+
             // Read the version from the local version.json file in the app directory
             string versionFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "version.json");
             if (File.Exists(versionFile))
