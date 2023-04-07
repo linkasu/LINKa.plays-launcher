@@ -45,7 +45,7 @@ jobs:
 
   deploy:
    needs: [build]
-   runs-on: ubuntu-lastet
+   runs-on: ubuntu-20.04
    steps:
     - uses: actions/download-artifact@v3
       with:
