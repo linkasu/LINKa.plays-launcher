@@ -65,4 +65,4 @@ jobs:
       env:
         SSH_KEY: ${{ secrets.SSH_KEY }}      
       run: |
-        cat launcher.zip | ssh -i ~/.ssh/key -o StrictHostKeyChecking=no aacidov@linka.su dd of=/var/www/wordpress/linkaplay/launcher.zip
+        cat launcher.zip | ssh -i ~/.ssh/key -o StrictHostKeyChecking=no aacidov@linka.su dd of=/var/www/linka.su/linkaplay/launcher.zip
