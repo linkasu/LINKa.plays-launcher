@@ -13,18 +13,13 @@
             <RowDefinition/>
             <RowDefinition/>
             <RowDefinition/>
-            <RowDefinition/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Image Grid.Row="0" Source="/appicon.png" Margin="20" />
         <Button Content="Запустить игры"  Grid.Row="1" Click="OpenGames_Click"/>
-        <Button  Click="OpenMethodic_Click"  Grid.Row="2">
-            <TextBlock>
-                Прочитать методическое пособие<LineBreak/> дефектолога Ольги Унгуряну
-            </TextBlock>
-        </Button>
+
         <Button Content="Обновлений нет" x:Name="UpdateButton" Click="OpenDownload_Click" IsEnabled="False" Grid.Row="3"/>
 
     </Grid>
