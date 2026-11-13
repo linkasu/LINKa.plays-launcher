@@ -38,50 +38,22 @@ jobs:
       
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
     # Install the .NET Core workload
-    - name: Install .NET Core
-      uses: actions/setup-dotnet@v3
+    - name: Install .NET
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 6.0.x
-    - name: Add msbuild to PATH
-      uses: microsoft/setup-msbuild@v1.1
-    - name: Restore packages
-      run: nuget restore $env:Solution_Path 
-      
-    - name: Build solution
-      run: msbuild $env:Solution_Path /t:Build /p:Configuration=Release  
+        dotnet-version: 10.0.x
+
+    - name: Publish self-contained launcher
+      run: dotnet publish LINKa.plays-launcher/LINKa.plays-launcher.csproj -c Release -r win-x64 --self-contained true -o publish
 
     - name: Upload artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: Release
-        path: LINKa.plays-launcher/bin/Release/net6.0-windows/
-
-  deploy:
-   if: ${{ needs.license-scope.outputs.deploy == 'true' }}
-   needs: [build, license-scope]
-   runs-on: ubuntu-20.04
-   steps:
-    - uses: actions/download-artifact@v3
-      with:
-        name: Release
-        path: launcher/
-
-    - name: Display structure of downloaded files
-      run: ls -R
-      working-directory: launcher
-    - name: Create zip file
-      run: zip -r launcher.zip launcher
-    - run: set -eu
-    - run: mkdir "$HOME/.ssh"
-    - run: echo "${{ secrets.SSH_KEY }}" > "$HOME/.ssh/key"
-    - run: chmod 600 "$HOME/.ssh/key"
-    - name: Deploy to server
-      env:
-        SSH_KEY: ${{ secrets.SSH_KEY }}      
-      run: |
-        cat launcher.zip | ssh -i ~/.ssh/key -o StrictHostKeyChecking=no aacidov@linka.su dd of=/var/www/linka.su/linkaplay/launcher.zip
+        path: publish/
+    # The full Electron release publishes launcher.zip together with the installer.

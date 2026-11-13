@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Text.Json;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace LINKa.plays_launcher
@@ -17,17 +19,20 @@ namespace LINKa.plays_launcher
         public MainWindow()
         {
             InitializeComponent();
-            try
+            Loaded += async (_, _) =>
             {
-                CheckUpdate();
-            }
-            catch (Exception)
-            {
-
-            } 
+                try
+                {
+                    await CheckUpdate();
+                }
+                catch (Exception)
+                {
+                    // Games remain available when the update service is unreachable.
+                }
+            };
         }
 
-        private void CheckUpdate()
+        private async Task CheckUpdate()
         {
             // URL of the JSON file
             string url = "https://linka.su/linkaplay/version.json";
@@ -36,10 +41,10 @@ namespace LINKa.plays_launcher
             string appVersion = GetAppVersion();
 
             // Fetch the JSON data from the URL
-            using (WebClient client = new WebClient())
+            using (HttpClient client = new HttpClient { Timeout = TimeSpan.FromSeconds(5) })
             {
-                string jsonData = client.DownloadString(url);
-                JsonDocument doc = JsonDocument.Parse(jsonData);
+                string jsonData = await client.GetStringAsync(url);
+                using JsonDocument doc = JsonDocument.Parse(jsonData);
                 string version = GetStringProperty(doc.RootElement, "version");
 
                 // Compare the version with the app version
@@ -101,7 +106,23 @@ namespace LINKa.plays_launcher
 
         private void OpenGames_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(Path.Combine(Directory.GetCurrentDirectory(), "LINKa.plays.exe"));
+            try
+            {
+                string appDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                using Process process = Process.Start(new ProcessStartInfo
+                {
+                    FileName = Path.Combine(appDirectory, "LINKa.plays.exe"),
+                    WorkingDirectory = appDirectory
+                }) ?? throw new InvalidOperationException("Не удалось создать процесс игры.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this,
+                    $"Не удалось запустить игры. Убедитесь, что LINKa.plays.exe находится в папке запуска приложения.\n\n{ex.Message}",
+                    "Ошибка запуска", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
             Application.Current.Shutdown();
         }
 
